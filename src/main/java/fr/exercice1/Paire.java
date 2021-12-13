@@ -1,53 +1,28 @@
 package fr.exercice1;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
+public class Paire<A,B> {
+    private A _fst;
+    private B _snd;
 
-public class Paire<T, U> {
-    T fst;
-    U snd;
-
-    public Paire(T fst, U snd) {
-        this.fst = fst;
-        this.snd = snd;
+    public Paire(final A fst, final B snd) {
+        _fst = fst;
+        _snd = snd;
     }
 
-    public T getFst() {
-        return fst;
+    public Paire() {
+
     }
 
-    public void setFst(T fst) {
-        this.fst = fst;
-    }
+    public A fst() { return _fst; }
 
-    public U getSnd() {
-        return snd;
-    }
-
-    public void setSnd(U snd) {
-        this.snd = snd;
-    }
-
-    public List<T> filtragePredicatif(List<Predicate<T>> predicat, List<T> elements) {
-        List<T> lesElements = new ArrayList<>();
-        boolean test;
-        for (T elem : elements) {
-            test = false;
-            for (Predicate<T> tPredicate : predicat) {
-                if (tPredicate.test(elem)) {
-                    test = true;
-                }
-            }
-            if (test) {
-                lesElements.add(elem);
-            }
-        }
-        return lesElements;
-    }
+    public B snd() { return _snd; }
 
     @Override
     public String toString() {
-        return String.format("(%s,%s)", fst.toString(), snd.toString());
-    }
+        if(_fst == null) return String.format("(%s, %s) :: Paire[%s,%s]", "null_DEF", _snd, "null_DEF", _snd.getClass().getSimpleName());
+        else return String.format("(%s, %s) :: Paire[%s,%s]", _fst, _snd, _fst.getClass().getSimpleName(), _snd.getClass().getSimpleName()); }
+
+    public <C> Paire<C,B> changeFst(C val) { return new Paire<>(val, _snd); }
+
+    public <C> Paire<A,C> changeSnd(C val) { return new Paire<>(_fst, val); }
 }

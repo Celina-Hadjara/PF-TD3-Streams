@@ -57,10 +57,9 @@ public class DAO {
 
         for (Commande commande : commandes) {
             for (Paire<Produit, Integer> paire : commande.lignes()) {
-                produits.add(paire.fst);
+                produits.add(paire.fst());
             }
         }
-
         return produits;
         /*return commandes.stream()
                 .flatMap(c -> c.lignes().stream())
