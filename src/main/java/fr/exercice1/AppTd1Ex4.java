@@ -1,5 +1,7 @@
 package fr.exercice1;
 
+import fr.Paire;
+
 public class AppTd1Ex4 {
     public static void main(String[] args) {
         DAO data = DAO.instance();

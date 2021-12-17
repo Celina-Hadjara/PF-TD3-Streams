@@ -8,7 +8,6 @@ import fr.exercice2.universite.refactorer.MesMethodes;
 import fr.exercice2.universite.refactorer.MesPrediates;
 
 import java.util.Map;
-
 import java.util.Set;
 
 /**
@@ -30,55 +29,42 @@ public class AppTd2 {
         e1.noter(m1, 12.0);
         e1.noter(m2, 14.0);
         e1.noter(m3, 10.0);
-        String.valueOf(e1);
         Etudiant e2 = new Etudiant("39002", "Bob", "Eponge", a1);
         e2.noter(m1, 14.0);
+        e2.noter(m2, 12.0);
         e2.noter(m3, 14.0);
         Etudiant e3 = new Etudiant("39003", "Charles", "Chaplin", a1);
         e3.noter(m1, 18.0);
         e3.noter(m2, 5.0);
-        e3.noter(m3, 14.0);
+        e3.noter(m3, 1.0);
         Etudiant e4 = new Etudiant("39004", "Toto", "Dupont", a1);
         e4.noter(m1, 8.0);
-        e4.noter(m2, 5.0);
-        e4.noter(m3, 14.0);
+        e4.noter(m3, 8.0);
 
-        MesMethodes.afficheSi("**TOUS LES ETUDIANTS", a -> true, a1);
+        MesMethodes.afficheSi("\n \n**TOUS LES ETUDIANTS", a -> true, a1);
 
-        MesMethodes.afficheSi("**TOUS LES ETUDIANTS DEFAILLANTS", MesPrediates.aDEF, a1);
+        MesMethodes.afficheSi2("\n**LES NOTES PONDEREES DE TOUS LES ETUDIANTS (notesPonderees)", a2 -> true, a1, MesPrediates.notesPonderees);
 
-        System.out.println("\n **NOTES PONDEREES \n "+ e2.nom() + MesPrediates.notesPonderees.apply(e2));
+        MesMethodes.afficheSi2("\n**LES NOTES PONDEREES INDICATIVES DE TOUS LES ETUDIANTS (notesPondereesIndicatives)", a2 -> true, a1, MesPrediates.notesPondereesIndicatives);
 
-        System.out.println("\n **NOTES PONDEREES Indicatives \n "+ e2.nom() + MesPrediates.notesPondereesIndicatives.apply(e2));
+        MesMethodes.afficheSi2("\n**LA MOYENNE DE TOUS LES ETUDIANTS (moyenne)", a2 -> true, a1, MesPrediates.moyenne);
 
-        //MesMethodes.afficheSi("**ETUDIANTS AVEC NOTE ELIMINATOIRE", MesPrediates.aNoteEliminatoire, a1);
+        MesMethodes.afficheSi2("\n**LA MOYENNE INDICATIVE DE TOUS LES ETUDIANTS (moyenneIndicative)", a2 -> true, a1, MesPrediates.moyenneIndicative);
 
-        for (Etudiant etudiant : a1.etudiants()) {
-            String.format(
-                    "%n **LA MOYENNE DE: %s %s %s",
-                    etudiant.nom(),
-                    etudiant.prenom(),
-                    MesMethodes.moyenne(etudiant)
-            );
-        }
+        MesMethodes.afficheSi("\n**TOUS LES ETUDIANTS DEFAILLANTS", MesPrediates.aDEF, a1);
 
-        MesMethodes.afficheSi(
-                "\n\n**ETUDIANTS SOUS LA MOYENNE (v1)", MesPrediates.naPasLaMoyennev1, a1
-        );
+        MesMethodes.afficheSi("**ETUDIANTS AVEC NOTE ELIMINATOIRE", MesPrediates.aNoteEliminatoire, a1);
 
-        MesMethodes.afficheSi(
-                "\n\n**ETUDIANTS SOUS LA MOYENNE (v2)", MesPrediates.naPasLaMoyennev2, a1
-        );
+        MesMethodes.afficheSi("\n**ETUDIANTS SOUS LA MOYENNE (v1)", MesPrediates.naPasLaMoyennev1, a1);
 
-        MesMethodes.afficheSi(
-                "\n\n**ETUDIANTS EN SESSION 2 (v2)", MesPrediates.session2v1, a1
-        );
+        MesMethodes.afficheSi("\n**ETUDIANTS SOUS LA MOYENNE (v2)", MesPrediates.naPasLaMoyennev2, a1);
 
-        MesMethodes.afficheSi2("\n**TOUS LES ETUDIANTS",
-                a2 -> true, a1, MesPrediates.functionMoyenne);
+        MesMethodes.afficheSi("\n**ETUDIANTS EN SESSION 2", MesPrediates.session2v1, a1);
 
-        MesMethodes.afficheSi2("\n**TOUS LES ETUDIANTS AVEC MOYENNE INDICATIVE", MesPrediates.naPasLaMoyenneGeneralise,
-                a1, MesPrediates.functionMoyenneIndicative);
+        MesMethodes.afficheSi2("\n**LA MOYENNE DE TOUS LES ETUDIANTS (functionMoyenne)", a2 -> true, a1, MesPrediates.functionMoyenne);
 
+        MesMethodes.afficheSi2("\n**LA MOYENNE DE TOUS LES ETUDIANTS (functionMoyenneIndicative)", a2 -> true, a1, MesPrediates.functionMoyenneIndicative);
+
+        MesMethodes.afficheSi("\n***LES ETUDIANTS EN DESSOUS DE LA MOYENNE (naPasLaMoyenneGeneralise)", MesPrediates.naPasLaMoyenneGeneralise, a1);
     }
 }
