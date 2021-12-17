@@ -6,8 +6,10 @@ import fr.exercice2.universite.Matiere;
 import fr.exercice2.universite.UE;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Class of functions and methods
@@ -61,20 +63,17 @@ public class MesMethodes {
      * @param etudiant {@link Etudiant} pour calculer sa moyenne
      * @return la moyenne des etudiants sans tenir compte des défaillants
      */
-    public static Double moyenne(Etudiant etudiant) {
+    public static Double moyenne (Etudiant etudiant) {
         double laMoyenne = 0;
         int sommeEcts = 0;
         if (MesPrediates.aDEF.test(etudiant)) return null;
-        for (UE ue : etudiant.annee().ues()) {
+        for (UE ue :etudiant.annee().ues()) {
             for (Map.Entry<Matiere, Integer> ects : ue.ects().entrySet()) {
-                laMoyenne += etudiant.notes().get(ects.getKey()) * ects.getValue();
-                sommeEcts += ects.getValue();
+                laMoyenne += etudiant.notes().get(ects.getKey())*ects.getValue();
+                sommeEcts+= ects.getValue();
             }
         }
-
-        if (sommeEcts != 0) return laMoyenne / sommeEcts;
-
-        return null;
+        return laMoyenne/sommeEcts;
     }
 
     /**
@@ -100,23 +99,22 @@ public class MesMethodes {
      * @param etudiant pour calculer sa moyenne
      * @return moyenne de l'étudiant en tenant compte de la mention défaillante qui devient un 0
      */
-    public static Double moyenneIndicative(Etudiant etudiant) {
+    public static Double moyenneIndicative(Etudiant etudiant){
         double laMoyenne = 0.0;
         int sommeEcts = 0;
-        for (UE ue : etudiant.annee().ues()) {
+        for (UE ue :etudiant.annee().ues()) {
             for (Map.Entry<Matiere, Integer> ects : ue.ects().entrySet()) {
-                if (!etudiant.notes().containsKey(ects.getKey())) {
-                    etudiant.notes().put(ects.getKey(), 0.0);
+                if (!etudiant.notes().containsKey(ects.getKey())){
+                    etudiant.notes().put(ects.getKey(),0.0);
                 }
-                laMoyenne += etudiant.notes().get(ects.getKey()) * ects.getValue();
-                sommeEcts += ects.getValue();
+                laMoyenne += etudiant.notes().get(ects.getKey())*ects.getValue();
+                sommeEcts+= ects.getValue();
             }
         }
-
         if (sommeEcts != 0) return laMoyenne / sommeEcts;
-
         return null;
     }
+
     //public static Function<Function<Etudiant,Double>, Predicate<Etudiant>> naPasLaMoyenneGeneralise = etudiant -> {
 
     //return etudiant.prenom() + " " + etudiant.nom() + " : " + MesMethodes.moyenneIndicative(etudiant);

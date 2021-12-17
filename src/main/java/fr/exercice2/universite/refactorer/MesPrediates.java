@@ -1,6 +1,6 @@
 package fr.exercice2.universite.refactorer;
 
-import fr.exercice1.Paire;
+import fr.Paire;
 import fr.exercice2.universite.Annee;
 import fr.exercice2.universite.Etudiant;
 import fr.exercice2.universite.Matiere;
@@ -8,7 +8,6 @@ import fr.exercice2.universite.UE;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -99,6 +98,7 @@ public class MesPrediates {
         }
         return false;
     };
+
     /*
       Question 3
       Function: Prends un argument (T) et retourne un (R), c'est à dire T convertie en R
@@ -106,7 +106,6 @@ public class MesPrediates {
       Consumer: Prends un argument (T) et ne retourne aucune valeur
       Supplier: Ne prends rien en argument et retourne (T)
      */
-
     /**
      * Vérifier si un étudiant a une note éliminatoire cad <6
      */
@@ -142,15 +141,24 @@ public class MesPrediates {
      */
     public static final Predicate<Etudiant> session2v1 = etudiant -> aDEF.or(aNoteEliminatoire).or(naPasLaMoyennev1).test(etudiant);
 
+    /**
+     * Function qui affiche la moyenne en tenant compte de défaillant
+     */
     public static final Function<Etudiant, String> functionMoyenne = etudiant -> {
         if (aDEF.negate().test(etudiant))
             return etudiant.prenom() + " " + etudiant.nom() + " : " + MesMethodes.moyenne(etudiant);
         return etudiant.prenom() + " " + etudiant.nom() + " : " + "défaillant";
     };
 
+    /**
+     * Function qui affiche la moyenne, 0.0 dans la matière si l'étudiant est défaillant
+     */
     public static final Function<Etudiant, String> functionMoyenneIndicative = etudiant ->
             etudiant.prenom() + " " + etudiant.nom() + " : " + MesMethodes.moyenneIndicative(etudiant);
 
+    /**
+     * En dessous de 10
+     */
     public static final Predicate<Etudiant> naPasLaMoyenneGeneralise = etudiant -> {
         Double aDoubleIndic = MesMethodes.moyenneIndicative(etudiant) == null ? null : MesMethodes.moyenneIndicative(etudiant);
         Double aDouble = MesMethodes.moyenne(etudiant) == null ? null : MesMethodes.moyenne(etudiant);
@@ -179,10 +187,9 @@ public class MesPrediates {
      * Matières coefficientées d'un étudiant (version Entry)
      */
     public static final Function<Etudiant, Stream<Map.Entry<Matiere, Integer>>> matieresCoefE_ =
-            etudiant ->
-                    etudiant.annee().ues()
-                            .stream()
-                            .flatMap(ue -> ue.ects().entrySet().stream());
+            etudiant -> etudiant.annee().ues()
+                    .stream()
+                    .flatMap(ue -> ue.ects().entrySet().stream());
 
     /**
      * Transformation d'une Entry en une Paire
@@ -222,10 +229,11 @@ public class MesPrediates {
      * </ul>
      */
     public static final Function<Etudiant, List<Paire<Double, Integer>>> notesPonderees = etudiant ->
-            matieresCoefE.apply(etudiant).map(
-                            x -> (aDEF.test(etudiant))
-                                    ? new Paire<Double, Integer>(null, x.snd())
-                                    : new Paire<>(etudiant.notes().get(x.fst()), x.snd())).toList();
+            matieresCoefE.apply(etudiant)
+                    .map(
+                            x -> new Paire<>(etudiant.notes().get(x.fst()), x.snd()))
+                    .toList();
+
     /**
      * Obtention de la liste de (note, coef) pour les matières d'un étudiant
      * <ul>
@@ -238,8 +246,52 @@ public class MesPrediates {
      * </ul>
      */
     public static final Function<Etudiant, List<Paire<Double, Integer>>> notesPondereesIndicatives = etudiant ->
-            matieresCoefE.apply(etudiant).map(
-                    y -> (aDEF.test(etudiant))
-                            ? new Paire<>(0.0, y.snd())
-                            : new Paire<>(etudiant.notes().get(y.fst()), y.snd())).toList();
+            matieresCoefE.apply(etudiant)
+                    .map(
+                            y -> (aDEF.test(etudiant) && etudiant.notes().get(y.fst()) == null) ?
+                                    new Paire<>(0.0, y.snd()) :
+                                    new Paire<>(etudiant.notes().get(y.fst()), y.snd()))
+                    .toList();
+
+    /**
+     * Replie avec l'accumulateur spécifique
+     */
+    public static final Function<List<Paire<Double, Integer>>, Paire<Double, Integer>> reduit = l ->
+            l.stream().reduce(zero, accumulateurMoyenne);
+
+    /**
+     * Calcule la moyenne à partir d'un couple (somme pondérée, somme coefs)
+     */
+    public static final Function<Paire<Double, Integer>, Double> divise = p ->
+            p.fst() / p.snd();
+
+    /**
+     * Calcul de moyenne fonctionnel
+     * Composer notesPonderees etudiant renvois list , reduit liste renvoi paire et divise pair renvoi double
+     * Exception en cas de matière DEF
+     */
+    public static final Function<Etudiant, Double> computeMoyenne = etudiant ->
+            (aDEF.test(etudiant)) ?
+                    null :
+                    divise.apply(reduit.apply(notesPonderees.apply(etudiant)));
+
+    /**
+     * Calcul de moyenne fonctionnel
+     * Composer notesPondereesIndicatives, reduit et divise
+     * Pas d'exception en cas de matière DEF
+     */
+    public static final Function<Etudiant, Double> computeMoyenneIndicative = etudiant ->
+            divise.apply(reduit.apply(notesPondereesIndicatives.apply(etudiant)));
+
+    /**
+     * Calcul de moyenne
+     */
+    public static final Function<Etudiant, Double> moyenne = e ->
+            (e == null || aDEF.test(e)) ? null : computeMoyenne.apply(e);
+
+    /**
+     * Calcul de moyenne indicative
+     */
+    public static final Function<Etudiant, Double> moyenneIndicative =
+            computeMoyenneIndicative;
 }

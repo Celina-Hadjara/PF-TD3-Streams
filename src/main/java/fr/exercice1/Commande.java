@@ -1,5 +1,7 @@
 package fr.exercice1;
 
+import fr.Paire;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -35,8 +37,6 @@ public class Commande {
         return lignes.stream()
                 .map(ligne -> formatteurLigne.apply(ligne))
                 .collect(Collectors.joining("\n"));
-
-
     }
 
     /**
@@ -59,6 +59,14 @@ public class Commande {
             commandeNormalisee.ajouter(p, lignesCumulees.get(p));
         }
         return commandeNormalisee;
+    }
+
+    public <T, U> Map<T, List<U>> regrouper(List<Paire<T, U>> ligne) {
+        Map<T, List<U>> resultat = new HashMap<>();
+        ligne.forEach(
+                l -> resultat.computeIfAbsent(l.fst(), a -> new ArrayList<>()).add(l.snd())
+        );
+        return resultat;
     }
 
     public Double cout(Function<Paire<Produit,Integer>,Double> calculLigne) {
@@ -91,14 +99,6 @@ public class Commande {
     /**
      * Une ligne de commande
      */
-    Function<Paire<Produit, Integer>, String> formatteurLigne = ligne ->
+    public Function<Paire<Produit, Integer>, String> formatteurLigne = ligne ->
             String.format("%s %d", ligne.fst(), ligne.snd());
-
-    public <T, U> Map<T, List<U>> regrouper(List<Paire<T, U>> ligne) {
-        Map<T, List<U>> resultat = new HashMap<>();
-        ligne.forEach(
-                l -> resultat.computeIfAbsent(l.fst(), a -> new ArrayList<>()).add(l.snd())
-        );
-        return resultat;
-    }
 }

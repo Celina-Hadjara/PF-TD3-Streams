@@ -1,4 +1,4 @@
-package fr.exercice1;
+package fr;
 
 public class Paire<A,B> {
     private A _fst;
@@ -9,18 +9,15 @@ public class Paire<A,B> {
         _snd = snd;
     }
 
-    public Paire() {
-
-    }
-
     public A fst() { return _fst; }
 
     public B snd() { return _snd; }
 
+
     @Override
     public String toString() {
-        if(_fst == null) return String.format("(%s, %s) :: Paire[%s,%s]", "null_DEF", _snd, "null_DEF", _snd.getClass().getSimpleName());
-        else return String.format("(%s, %s) :: Paire[%s,%s]", _fst, _snd, _fst.getClass().getSimpleName(), _snd.getClass().getSimpleName()); }
+        return String.format("(%s, %s) :: Paire[%s,%s]", _fst, _snd, "Double", _snd.getClass().getSimpleName());
+    }
 
     public <C> Paire<C,B> changeFst(C val) { return new Paire<>(val, _snd); }
 
